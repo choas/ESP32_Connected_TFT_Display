@@ -50,26 +50,37 @@ config EXAMPLE_DISPLAY_TYPE
             bool "M5Stack TFT display"
     endchoice
 
-config EXAMPLE_USE_WIFI
+config EXAMPLE_CONNECT_WIFI
     bool "Use wifi in TFT Demo"
-    default n
+    default y
     help
         If WiFi is used ntp server will be used to provide the exact time
         and file timestamps will be correct.
 
-config WIFI_SSID
+config EXAMPLE_WIFI_SSID
     string "WiFi SSID"
-   	depends on EXAMPLE_USE_WIFI
+   	depends on EXAMPLE_CONNECT_WIFI
     default "myssid"
     help
 	SSID (network name) for the demo to connect to.
 
-config WIFI_PASSWORD
+config EXAMPLE_WIFI_PASSWORD
     string "WiFi Password"
-   	depends on EXAMPLE_USE_WIFI
+   	depends on EXAMPLE_CONNECT_WIFI
     default "mypassword"
     help
 	WiFi password (WPA or WPA2) for the demo to use.
+
+
+config BROKER_URL
+    string "Broker URL"
+    default "mqtt://mqtt.eclipse.org"
+    help
+        URL of the broker to connect to
+
+config BROKER_URL_FROM_STDIN
+    bool
+    default y if BROKER_URL = "FROM_STDIN"
 
 
 endmenu
