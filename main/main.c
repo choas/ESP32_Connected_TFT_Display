@@ -63,6 +63,15 @@ int calcMandel(int i, int j)
 	return 0;
 }
 
+static color_t getColor(int c) {
+		color_t color;
+		color.r = 10;
+		color.g = 10;
+		color.b = c * 6;
+		return color;
+}
+
+
 //-----------------------
 static void mandelbrot_demo()
 {
@@ -73,14 +82,8 @@ static void mandelbrot_demo()
 	int py = 0;
 	while (px < 27)
 	{
-
 		int c = calcMandel(py, px);
-		color_t color;
-		color.r = 10;
-		color.g = 10;
-		color.b = c * 6;
-
-		TFT_fillCircle(px * 8 + 14, py * 8 + 4, radius, color);
+		TFT_fillCircle(px * 8 + 14, py * 8 + 4, radius, getColor(c));
 
 		py += 1;
 		if (py > 40)
@@ -89,7 +92,57 @@ static void mandelbrot_demo()
 			px += 1;
 		}
 	}
-	vTaskDelay(10 / portTICK_RATE_MS);
+	vTaskDelay(1000 / portTICK_RATE_MS);
+
+	xl = -0.6;
+	xu = -0.5;
+	yl = -0.6;
+	yu = -0.7;
+
+	xl = -0.566500;
+	yu = -0.666500;
+
+	// -0.566500 -0.598000 -0.698000 -0.666500
+
+	int d = 10;
+
+	double in = 0.000005;
+
+	while(1) {
+//	for (reps = 40; reps < 220; reps += 1) {
+
+
+		//xl -= in * -d;
+		xu += in * -d;
+		yl += in * -d;
+		//yu -= in * -d;
+
+
+		reps += d;
+		if (reps > 2000 || reps < 30) {
+			d *= -1;
+		}
+
+		printf("%d: %f %f %f %f\n", reps, xl, xu, yl, yu);
+
+		px = 0;
+		py = 0;
+		while (px < 27)
+		{
+			int c = calcMandel(py, px);
+			TFT_fillCircle(px * 8 + 14, py * 8 + 4, radius, getColor(c));
+
+			py += 1;
+			if (py > 40)
+			{
+				py = 0;
+				px += 1;
+			}
+		}
+
+		vTaskDelay(10 / portTICK_RATE_MS);
+	}
+
 }
 
 //=============
