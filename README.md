@@ -7,3 +7,15 @@
 ## TTF Library
 
 TTF library based on [ESP32_TFT_library](https://github.com/AMTechMX/ESP32_TFT_library.git)([66e39dd](https://github.com/AMTechMX/ESP32_TFT_library/commit/66e39dd13e61891423638b50686df200877b8270))
+
+## Build
+
+requires esp-idf
+
+```shell
+idf.py menuconfig
+```
+
+```shell
+idf.py flash
+```
