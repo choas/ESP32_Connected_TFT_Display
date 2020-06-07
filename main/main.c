@@ -29,6 +29,8 @@
 #define SPI_BUS TFT_HSPI_HOST
 // ==========================================================
 
+#if CALC_MANDELBROT
+
 //-------------------------------------------------------------------
 // Mandelbrot calculation
 //
@@ -72,6 +74,8 @@ int calcMandel(int i, int j)
 	return 0;
 }
 
+#endif
+
 static color_t getColor(int c) {
 		color_t color;
 		color.r = 10;
@@ -80,6 +84,21 @@ static color_t getColor(int c) {
 		return color;
 }
 
+
+
+
+int pos = 0;
+// int posY = 0;
+
+static void drawDot(int c) {
+	const int radius = 3;
+	TFT_fillCircle((pos / 40) * 8 + 14, (pos % 40) * 8 + 4, radius, getColor(c));
+
+	pos = (pos + 1) % 1000;
+}
+
+
+#if CALC_MANDELBROT
 
 //-----------------------
 static void mandelbrot_demo()
@@ -154,7 +173,7 @@ static void mandelbrot_demo()
 
 }
 
-
+#endif
 
 static const char *TAG = "MQTT_EXAMPLE";
 
@@ -171,6 +190,9 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
 
             msg_id = esp_mqtt_client_subscribe(client, "/topic/qos0", 0);
+            ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
+
+            msg_id = esp_mqtt_client_subscribe(client, "/topic/m", 0);
             ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
 
             msg_id = esp_mqtt_client_subscribe(client, "/topic/qos1", 1);
@@ -198,6 +220,20 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             ESP_LOGI(TAG, "MQTT_EVENT_DATA");
             printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
             printf("DATA=%.*s\r\n", event->data_len, event->data);
+
+						if (strncmp(event->topic, "/topic/m", 8) == 0) {
+							char a[10];
+							int l = 9;
+							if (event->data_len < l) {
+								l = event->data_len;
+							}
+							strncpy(a, event->data, l);
+							a[l] = '\0';
+							int c = atoi(a);
+							printf(">>>> %d\n", c);
+							drawDot(c);
+						}
+
             break;
         case MQTT_EVENT_ERROR:
             ESP_LOGI(TAG, "MQTT_EVENT_ERROR");
@@ -404,5 +440,9 @@ void app_main()
 	//=========
 	// Run demo
 	//=========
-	mandelbrot_demo();
+	//mandelbrot_demo();
+
+	for(int i = 0; i < 1000; i++) {
+		drawDot(i%40);
+	}
 }
