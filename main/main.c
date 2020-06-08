@@ -29,53 +29,6 @@
 #define SPI_BUS TFT_HSPI_HOST
 // ==========================================================
 
-#if CALC_MANDELBROT
-
-//-------------------------------------------------------------------
-// Mandelbrot calculation
-//
-// note: this code is based on the C64 BASIC code
-//       https://semioriginalthought.blogspot.com/2012/04/how-to-simply-create-mandelbrot-set-on.html
-//
-double xl = -2.0;
-double xu = 0.5;
-double yl = -1.1;
-double yu = 1.1;
-
-int reps = 40;
-int width = 40;
-int height = 25;
-
-int calcMandel(int i, int j)
-{
-
-	double xinc = (xu - xl) / width;
-	double yinc = (yu - yl) / height;
-
-	double nreal = xl + i * xinc;
-	double nimg = yl + j * yinc;
-	double rz = 0.0;
-	double iz = 0.0;
-	double r2z = 0.0;
-	double i2z = 0.0;
-	for (int k = 1; k <= reps; k++)
-	{
-
-		r2z = rz * rz - iz * iz;
-		i2z = 2 * rz * iz;
-		rz = r2z + nreal;
-		iz = i2z + nimg;
-
-		if ((rz * rz + iz * iz) > 4)
-		{
-			return k;
-		}
-	}
-	return 0;
-}
-
-#endif
-
 static color_t getColor(int c) {
 		color_t color;
 		color.r = 10;
@@ -84,99 +37,14 @@ static color_t getColor(int c) {
 		return color;
 }
 
-
-
-
 int pos = 0;
-// int posY = 0;
 
 static void drawDot(int c) {
-	const int radius = 3;
-	TFT_fillCircle((pos / 40) * 8 + 14, (pos % 40) * 8 + 4, radius, getColor(c));
-
+	TFT_fillCircle(240 - ((pos / 40) * 8 + 14), (pos % 40) * 8 + 4, 3, getColor(c));
 	pos = (pos + 1) % 1000;
 }
 
-
-#if CALC_MANDELBROT
-
-//-----------------------
-static void mandelbrot_demo()
-{
-
-	const int radius = 3;
-
-	int px = 0;
-	int py = 0;
-	while (px < 27)
-	{
-		int c = calcMandel(py, px);
-		TFT_fillCircle(px * 8 + 14, py * 8 + 4, radius, getColor(c));
-
-		py += 1;
-		if (py > 40)
-		{
-			py = 0;
-			px += 1;
-		}
-	}
-	vTaskDelay(1000 / portTICK_RATE_MS);
-
-	xl = -0.6;
-	xu = -0.5;
-	yl = -0.6;
-	yu = -0.7;
-
-	xl = -0.566500;
-	yu = -0.666500;
-
-	// -0.566500 -0.598000 -0.698000 -0.666500
-
-	int d = 10;
-
-	double in = 0.000005;
-
-	while(1) {
-//	for (reps = 40; reps < 220; reps += 1) {
-
-
-		//xl -= in * -d;
-		xu += in * -d;
-		yl += in * -d;
-		//yu -= in * -d;
-
-
-		reps += d;
-		if (reps > 2000 || reps < 30) {
-			d *= -1;
-		}
-
-		printf("%d: %f %f %f %f\n", reps, xl, xu, yl, yu);
-
-		px = 0;
-		py = 0;
-		while (px < 27)
-		{
-			int c = calcMandel(py, px);
-			TFT_fillCircle(px * 8 + 14, py * 8 + 4, radius, getColor(c));
-
-			py += 1;
-			if (py > 40)
-			{
-				py = 0;
-				px += 1;
-			}
-		}
-
-		vTaskDelay(10 / portTICK_RATE_MS);
-	}
-
-}
-
-#endif
-
 static const char *TAG = "MQTT_EXAMPLE";
-
 
 static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
 {
@@ -313,20 +181,11 @@ void mqtt_main()
 }
 
 
-
-
-
-
-
-
-
 //=============
 void app_main()
 {
 
 	mqtt_main();
-
-
 
 	// ========  PREPARE DISPLAY INITIALIZATION  =========
 
@@ -436,11 +295,6 @@ void app_main()
 	TFT_setRotation(PORTRAIT);
 	TFT_setFont(DEFAULT_FONT, NULL);
 	TFT_resetclipwin();
-
-	//=========
-	// Run demo
-	//=========
-	//mandelbrot_demo();
 
 	for(int i = 0; i < 1000; i++) {
 		drawDot(i%40);
