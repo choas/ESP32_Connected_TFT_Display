@@ -192,7 +192,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             msg_id = esp_mqtt_client_subscribe(client, "/topic/qos0", 0);
             ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
 
-            msg_id = esp_mqtt_client_subscribe(client, "/topic/m", 0);
+            msg_id = esp_mqtt_client_subscribe(client, "/c64/mandelbrot", 0);
             ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
 
             msg_id = esp_mqtt_client_subscribe(client, "/topic/qos1", 1);
@@ -221,7 +221,7 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
             printf("DATA=%.*s\r\n", event->data_len, event->data);
 
-						if (strncmp(event->topic, "/topic/m", 8) == 0) {
+						if (strncmp(event->topic, "/c64/mandelbrot", 15) == 0) {
 							char a[10];
 							int l = 9;
 							if (event->data_len < l) {
