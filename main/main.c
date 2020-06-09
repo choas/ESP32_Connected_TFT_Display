@@ -72,20 +72,14 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             break;
         case MQTT_EVENT_DATA:
             ESP_LOGI(TAG, "MQTT_EVENT_DATA");
-            printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
-            printf("DATA=%.*s\r\n", event->data_len, event->data);
+            printf("TOPIC=%.*s DATA_LEN=%d\r\n", event->topic_len, event->topic, event->data_len);
+//            printf("DATA=%.*s\r\n", event->data_len, event->data);
 
 						if (strncmp(event->topic, CONFIG_BROKER_TOPIC, strlen(CONFIG_BROKER_TOPIC)) == 0) {
-							char a[10];
-							int l = 9;
-							if (event->data_len < l) {
-								l = event->data_len;
+
+							for (int index = 0; index < event->data_len; index++) {
+								drawDot(event->data[index]);
 							}
-							strncpy(a, event->data, l);
-							a[l] = '\0';
-							int c = atoi(a);
-							printf(">>>> %d\n", c);
-							drawDot(c);
 						}
 
             break;
