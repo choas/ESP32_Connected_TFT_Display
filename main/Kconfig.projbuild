@@ -70,7 +70,7 @@ config BROKER_URL
 
 config BROKER_TOPIC
     string "Topic"
-    default "/c64/mandelbrot"
+    default "c64/mandelbrot"
     help
         topic to subscribe to
 
